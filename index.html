@@ -1,0 +1,2470 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+
+<title>My Music</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    -webkit-tap-highlight-color:transparent;
+}
+
+body{
+    background:#070707;
+    color:#fff;
+    font-family:Arial,Helvetica,sans-serif;
+    min-height:100vh;
+}
+
+button{
+    border:0;
+    color:inherit;
+    cursor:pointer;
+}
+
+.app{
+    max-width:700px;
+    margin:auto;
+    padding-bottom:155px;
+}
+
+.header{
+    height:75px;
+    padding:0 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+
+.logo{
+    font-size:25px;
+    font-weight:800;
+}
+
+.sub{
+    color:#858585;
+    font-size:12px;
+    margin-top:4px;
+}
+
+.plus{
+    width:43px;
+    height:43px;
+    border-radius:50%;
+    background:#1ed760;
+    color:#000;
+    font-size:29px;
+}
+
+.search{
+    margin:0 15px 20px;
+    height:53px;
+    border-radius:15px;
+    background:#191919;
+    display:flex;
+    align-items:center;
+    padding:0 14px;
+}
+
+.search-icon{
+    color:#aaa;
+    font-size:25px;
+    margin-right:10px;
+}
+
+.search input{
+    flex:1;
+    height:100%;
+    border:0;
+    outline:0;
+    background:transparent;
+    color:#fff;
+    font-size:15px;
+}
+
+.search input::placeholder{
+    color:#777;
+}
+
+.clear{
+    display:none;
+    background:none;
+    color:#999;
+    font-size:24px;
+}
+
+.content{
+    padding:0 15px;
+}
+
+.hidden{
+    display:none!important;
+}
+
+.welcome{
+    text-align:center;
+    padding:70px 20px;
+    color:#888;
+}
+
+.music-logo{
+    width:90px;
+    height:90px;
+    margin:auto auto 24px;
+    border-radius:50%;
+    background:#1ed760;
+    color:#000;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:43px;
+}
+
+.welcome h2{
+    color:#fff;
+    font-size:21px;
+    margin-bottom:9px;
+}
+
+.welcome p{
+    font-size:14px;
+}
+
+.section-title{
+    font-size:20px;
+    font-weight:700;
+    margin:5px 0 14px;
+}
+
+.song{
+    min-height:72px;
+    display:flex;
+    align-items:center;
+    gap:11px;
+    padding:7px;
+    margin-bottom:5px;
+    border-radius:12px;
+    background:#111;
+}
+
+.cover{
+    width:58px;
+    height:58px;
+    border-radius:7px;
+    object-fit:cover;
+    background:#222;
+    flex-shrink:0;
+}
+
+.song-info{
+    flex:1;
+    min-width:0;
+}
+
+.title{
+    font-size:15px;
+    font-weight:600;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.artist{
+    color:#999;
+    font-size:13px;
+    margin-top:5px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.actions{
+    display:flex;
+    gap:5px;
+}
+
+.play-small,
+.add-small{
+    width:38px;
+    height:38px;
+    border-radius:50%;
+    background:#222;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:16px;
+}
+
+.play-small{
+    background:#1ed760;
+    color:#000;
+}
+
+.add-small{
+    font-size:22px;
+}
+
+.loading{
+    text-align:center;
+    padding:50px;
+    color:#888;
+}
+
+.loader{
+    width:38px;
+    height:38px;
+    border:4px solid #333;
+    border-top-color:#1ed760;
+    border-radius:50%;
+    margin:0 auto 15px;
+    animation:spin .8s linear infinite;
+}
+
+@keyframes spin{
+    to{transform:rotate(360deg)}
+}
+
+.message{
+    text-align:center;
+    padding:40px 15px;
+    color:#888;
+}
+
+.error{
+    color:#ff6b6b;
+}
+
+.player{
+    position:fixed;
+    z-index:50;
+    left:8px;
+    right:8px;
+    bottom:69px;
+    max-width:684px;
+    margin:auto;
+    background:#191919;
+    border-radius:17px;
+    padding:12px;
+    box-shadow:0 5px 30px #000;
+}
+
+.player-top{
+    display:flex;
+    align-items:center;
+    gap:11px;
+}
+
+.player-cover{
+    width:52px;
+    height:52px;
+    border-radius:7px;
+    object-fit:cover;
+}
+
+.player-info{
+    min-width:0;
+    flex:1;
+}
+
+.player-title{
+    font-size:14px;
+    font-weight:700;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.player-artist{
+    color:#999;
+    font-size:12px;
+    margin-top:4px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+}
+
+.like{
+    background:none;
+    font-size:26px;
+    width:35px;
+}
+
+.like.active{
+    color:#1ed760;
+}
+
+.progress-row{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    margin-top:7px;
+}
+
+.time{
+    width:31px;
+    color:#888;
+    font-size:10px;
+    text-align:center;
+}
+
+#progress{
+    flex:1;
+    accent-color:#1ed760;
+}
+
+.controls{
+    height:48px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:17px;
+}
+
+.control{
+    width:35px;
+    height:35px;
+    background:none;
+    font-size:17px;
+}
+
+.control.active{
+    color:#1ed760;
+}
+
+.main-play{
+    width:45px;
+    height:45px;
+    border-radius:50%;
+    background:#fff;
+    color:#000;
+    font-size:17px;
+}
+
+.nav{
+    position:fixed;
+    z-index:60;
+    left:0;
+    right:0;
+    bottom:0;
+    height:65px;
+    background:#101010;
+    border-top:1px solid #252525;
+    display:flex;
+    max-width:700px;
+    margin:auto;
+}
+
+.nav button{
+    flex:1;
+    background:none;
+    color:#777;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+    font-size:11px;
+}
+
+.nav button.active{
+    color:#fff;
+}
+
+.nav button.active span:first-child{
+    color:#1ed760;
+}
+
+.nav-icon{
+    font-size:22px;
+}
+
+@media(min-width:700px){
+    .nav{
+        left:50%;
+        right:auto;
+        width:700px;
+        transform:translateX(-50%);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header class="header">
+    <div>
+        <div class="logo">My Music</div>
+        <div class="sub">Онлайн музыка</div>
+    </div>
+
+    <button class="plus" id="playlistOpen">+</button>
+</header>
+
+<div class="search">
+
+    <span class="search-icon">⌕</span>
+
+    <input
+        id="searchInput"
+        type="search"
+        placeholder="Найти песню или исполнителя..."
+        autocomplete="off"
+    >
+
+    <button class="clear" id="clearButton">×</button>
+
+</div>
+
+<main class="content">
+
+<div id="welcome" class="welcome">
+
+    <div class="music-logo">♫</div>
+
+    <h2>Найди свою музыку</h2>
+
+    <p>Ищи песни и исполнителей онлайн</p>
+
+</div>
+
+<div id="loading" class="loading hidden">
+
+    <div class="loader"></div>
+
+    <p>Ищем музыку...</p>
+
+</div>
+
+<section id="resultsSection" class="hidden">
+
+    <div class="section-title">Результаты</div>
+
+    <div id="results"></div>
+
+</section>
+
+<section id="playlistSection" class="hidden">
+
+    <div class="section-title">Мой плейлист</div>
+
+    <div id="playlist"></div>
+
+</section>
+
+<div id="emptyPlaylist" class="message hidden">
+
+    <div style="font-size:50px;margin-bottom:15px">♫</div>
+
+    <h3 style="color:white;margin-bottom:8px">
+        Плейлист пуст
+    </h3>
+
+    <p>Нажимай + возле песни</p>
+
+</div>
+
+</main>
+</div>
+
+
+<!-- PLAYER -->
+
+<div id="player" class="player hidden">
+
+<div class="player-top">
+
+    <img
+        id="playerCover"
+        class="player-cover"
+        src=""
+        alt=""
+    >
+
+    <div class="player-info">
+
+        <div id="playerTitle" class="player-title">
+            Песня
+        </div>
+
+        <div id="playerArtist" class="player-artist">
+            Исполнитель
+        </div>
+
+    </div>
+
+    <button id="likeButton" class="like">♡</button>
+
+</div>
+
+<div class="progress-row">
+
+    <span id="currentTime" class="time">0:00</span>
+
+    <input
+        id="progress"
+        type="range"
+        min="0"
+        max="1"
+        value="0"
+        step="0.1"
+    >
+
+    <span id="duration" class="time">0:00</span>
+
+</div>
+
+<div class="controls">
+
+    <button id="shuffleButton" class="control">🔀</button>
+
+    <button id="previousButton" class="control">⏮</button>
+
+    <button id="playButton" class="main-play">▶</button>
+
+    <button id="nextButton" class="control">⏭</button>
+
+    <button id="repeatButton" class="control">🔁</button>
+
+</div>
+
+</div>
+
+
+<audio id="audio" preload="metadata"></audio>
+
+
+<nav class="nav">
+
+<button id="searchTab" class="active">
+
+    <span class="nav-icon">⌕</span>
+
+    <span>Поиск</span>
+
+</button>
+
+<button id="playlistTab">
+
+    <span class="nav-icon">♫</span>
+
+    <span>Плейлист</span>
+
+</button>
+
+</nav>
+
+
+<script>
+
+/* =====================================================
+   AUDIUS
+===================================================== */
+
+const AUDIUS_API_KEY =
+    "ВСТАВЬ_СЮДА_API_KEY";
+
+const AUDIUS_API =
+    "https://api.audius.co/v1";
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const searchInput =
+    document.getElementById("searchInput");
+
+const clearButton =
+    document.getElementById("clearButton");
+
+const welcome =
+    document.getElementById("welcome");
+
+const loading =
+    document.getElementById("loading");
+
+const resultsSection =
+    document.getElementById("resultsSection");
+
+const results =
+    document.getElementById("results");
+
+const playlistSection =
+    document.getElementById("playlistSection");
+
+const playlist =
+    document.getElementById("playlist");
+
+const emptyPlaylist =
+    document.getElementById("emptyPlaylist");
+
+const player =
+    document.getElementById("player");
+
+const audio =
+    document.getElementById("audio");
+
+const playerCover =
+    document.getElementById("playerCover");
+
+const playerTitle =
+    document.getElementById("playerTitle");
+
+const playerArtist =
+    document.getElementById("playerArtist");
+
+const playButton =
+    document.getElementById("playButton");
+
+const previousButton =
+    document.getElementById("previousButton");
+
+const nextButton =
+    document.getElementById("nextButton");
+
+const shuffleButton =
+    document.getElementById("shuffleButton");
+
+const repeatButton =
+    document.getElementById("repeatButton");
+
+const likeButton =
+    document.getElementById("likeButton");
+
+const progress =
+    document.getElementById("progress");
+
+const currentTime =
+    document.getElementById("currentTime");
+
+const duration =
+    document.getElementById("duration");
+
+
+/* =====================================================
+   DATA
+===================================================== */
+
+let searchResults = [];
+
+let playlistData =
+    JSON.parse(
+        localStorage.getItem(
+            "myMusicPlaylist"
+        ) || "[]"
+    );
+
+let favorites =
+    JSON.parse(
+        localStorage.getItem(
+            "myMusicFavorites"
+        ) || "[]"
+    );
+
+let currentList = [];
+
+let currentIndex = -1;
+
+let shuffle = false;
+
+let repeat = false;
+
+let searchTimer;
+
+
+/* =====================================================
+   AUDIUS REQUEST
+===================================================== */
+
+function apiUrl(path,params={}){
+
+    const url =
+        new URL(
+            AUDIUS_API + path
+        );
+
+    Object.entries(params)
+        .forEach(
+            function([key,value]){
+
+                if(
+                    value !== undefined &&
+                    value !== null &&
+                    value !== ""
+                ){
+
+                    url.searchParams.set(
+                        key,
+                        value
+                    );
+
+                }
+
+            }
+        );
+
+    if(
+        AUDIUS_API_KEY &&
+        AUDIUS_API_KEY !==
+        "ВСТАВЬ_СЮДА_API_KEY"
+    ){
+
+        url.searchParams.set(
+            "api_key",
+            AUDIUS_API_KEY
+        );
+
+    }
+
+    return url.toString();
+
+}
+
+
+/* =====================================================
+   SEARCH
+===================================================== */
+
+searchInput.addEventListener(
+    "input",
+    function(){
+
+        const query =
+            searchInput.value.trim();
+
+        clearButton.style.display =
+            query ? "block" : "none";
+
+        clearTimeout(searchTimer);
+
+        if(!query){
+
+            showWelcome();
+
+            return;
+
+        }
+
+        searchTimer =
+            setTimeout(
+                function(){
+
+                    searchMusic(query);
+
+                },
+                450
+            );
+
+    }
+);
+
+
+searchInput.addEventListener(
+    "keydown",
+    function(e){
+
+        if(e.key === "Enter"){
+
+            clearTimeout(searchTimer);
+
+            const query =
+                searchInput.value.trim();
+
+            if(query){
+
+                searchMusic(query);
+
+            }
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   ONLINE SEARCH
+===================================================== */
+
+async function searchMusic(query){
+
+    welcome.classList.add("hidden");
+
+    resultsSection.classList.add("hidden");
+
+    playlistSection.classList.add("hidden");
+
+    emptyPlaylist.classList.add("hidden");
+
+    loading.classList.remove("hidden");
+
+    try{
+
+        const mainUrl =
+            apiUrl(
+                "/tracks/search",
+                {
+                    query:query,
+                    limit:30,
+                    sort_method:"relevant"
+                }
+            );
+
+        const mainResponse =
+            await fetch(mainUrl);
+
+        if(!mainResponse.ok){
+
+            throw new Error(
+                "Audius HTTP " +
+                mainResponse.status
+            );
+
+        }
+
+        const mainData =
+            await mainResponse.json();
+
+        let tracks =
+            Array.isArray(mainData.data)
+            ? mainData.data
+            : [];
+
+        const words =
+            query
+                .trim()
+                .split(/\s+/)
+                .filter(
+                    function(word){
+
+                        return word.length >= 3;
+
+                    }
+                );
+
+        /*
+         * Дополнительный поиск помогает,
+         * когда Audius не поставил нужную песню
+         * в первые результаты полного запроса.
+         */
+
+        if(words.length > 1){
+
+            const extraWords =
+                words.slice(0,3);
+
+            const extraResults =
+                await Promise.allSettled(
+                    extraWords.map(
+                        async function(word){
+
+                            const url =
+                                apiUrl(
+                                    "/tracks/search",
+                                    {
+                                        query:word,
+                                        limit:20,
+                                        sort_method:"relevant"
+                                    }
+                                );
+
+                            const response =
+                                await fetch(url);
+
+                            if(!response.ok){
+
+                                return [];
+
+                            }
+
+                            const data =
+                                await response.json();
+
+                            return Array.isArray(
+                                data.data
+                            )
+                            ? data.data
+                            : [];
+
+                        }
+                    )
+                );
+
+            extraResults.forEach(
+                function(result){
+
+                    if(
+                        result.status ===
+                        "fulfilled"
+                    ){
+
+                        tracks.push(
+                            ...result.value
+                        );
+
+                    }
+
+                }
+            );
+
+        }
+
+
+        /* Убираем дубли */
+
+        const unique =
+            new Map();
+
+        tracks.forEach(
+            function(item){
+
+                if(
+                    item &&
+                    item.id &&
+                    item.title &&
+                    item.isStreamable !== false
+                ){
+
+                    if(
+                        !unique.has(
+                            String(item.id)
+                        )
+                    ){
+
+                        unique.set(
+                            String(item.id),
+                            item
+                        );
+
+                    }
+
+                }
+
+            }
+        );
+
+
+        searchResults =
+            Array.from(
+                unique.values()
+            )
+            .map(
+                normalizeTrack
+            );
+
+
+        /* Сортировка */
+
+        const normalizedQuery =
+            normalizeSearchText(
+                query
+            );
+
+        const queryWords =
+            normalizedQuery
+                .split(" ")
+                .filter(
+                    function(word){
+
+                        return word.length >= 2;
+
+                    }
+                );
+
+
+        searchResults.sort(
+            function(a,b){
+
+                const scoreA =
+                    searchScore(
+                        a,
+                        normalizedQuery,
+                        queryWords
+                    );
+
+                const scoreB =
+                    searchScore(
+                        b,
+                        normalizedQuery,
+                        queryWords
+                    );
+
+                return scoreB - scoreA;
+
+            }
+        );
+
+
+        loading.classList.add("hidden");
+
+        resultsSection.classList.remove(
+            "hidden"
+        );
+
+
+        if(!searchResults.length){
+
+            results.innerHTML =
+                `
+                <div class="message">
+                    Ничего не найдено
+                </div>
+                `;
+
+            return;
+
+        }
+
+        renderResults();
+
+    }
+    catch(error){
+
+        console.error(
+            "Audius search error:",
+            error
+        );
+
+        loading.classList.add("hidden");
+
+        resultsSection.classList.remove(
+            "hidden"
+        );
+
+        let text =
+            "Не удалось загрузить музыку.";
+
+        if(
+            AUDIUS_API_KEY ===
+            "ВСТАВЬ_СЮДА_API_KEY"
+        ){
+
+            text =
+                "Вставь Audius API Key в код.";
+
+        }
+
+        results.innerHTML =
+            `
+            <div class="message error">
+                ${text}
+                <br><br>
+                Попробуй ещё раз.
+            </div>
+            `;
+
+    }
+
+}
+
+
+/* =====================================================
+   NORMALIZE SEARCH TEXT
+===================================================== */
+
+function normalizeSearchText(text){
+
+    return String(text || "")
+        .toLowerCase()
+        .replace(/ё/g,"е")
+        .replace(
+            /[^a-zа-я0-9]+/gi,
+            " "
+        )
+        .replace(
+            /\s+/g,
+            " "
+        )
+        .trim();
+
+}
+
+
+/* =====================================================
+   SEARCH SCORE
+===================================================== */
+
+function searchScore(
+    song,
+    query,
+    words
+){
+
+    const title =
+        normalizeSearchText(
+            song.title
+        );
+
+    const artist =
+        normalizeSearchText(
+            song.artist
+        );
+
+    let score = 0;
+
+    if(title === query){
+
+        score += 10000;
+
+    }
+
+    if(title.startsWith(query)){
+
+        score += 5000;
+
+    }
+
+    if(title.includes(query)){
+
+        score += 4000;
+
+    }
+
+    let titleMatches = 0;
+
+    words.forEach(
+        function(word){
+
+            if(title.includes(word)){
+
+                titleMatches++;
+
+                score += 1000;
+
+            }
+
+        }
+    );
+
+    if(
+        words.length > 0 &&
+        titleMatches === words.length
+    ){
+
+        score += 6000;
+
+    }
+
+    if(artist === query){
+
+        score += 1800;
+
+    }
+
+    if(artist.includes(query)){
+
+        score += 1200;
+
+    }
+
+    words.forEach(
+        function(word){
+
+            if(artist.includes(word)){
+
+                score += 250;
+
+            }
+
+        }
+    );
+
+    if(
+        title.includes(query) &&
+        title.length < 60
+    ){
+
+        score += 150;
+
+    }
+
+    return score;
+
+}
+
+
+/* =====================================================
+   NORMALIZE AUDIUS TRACK
+===================================================== */
+
+function normalizeTrack(item){
+
+    let cover = "";
+
+    if(item.artwork){
+
+        if(
+            typeof item.artwork ===
+            "string"
+        ){
+
+            cover =
+                item.artwork;
+
+        }
+        else if(
+            typeof item.artwork ===
+            "object"
+        ){
+
+            cover =
+                item.artwork._1000x1000 ||
+                item.artwork._480x480 ||
+                item.artwork._150x150 ||
+                item.artwork["1000x1000"] ||
+                item.artwork["480x480"] ||
+                item.artwork["150x150"] ||
+                "";
+
+        }
+
+    }
+
+    if(
+        !cover &&
+        item.artwork &&
+        item.artwork.url
+    ){
+
+        cover =
+            item.artwork.url;
+
+    }
+
+    let artist =
+        "Неизвестный исполнитель";
+
+    if(
+        item.user &&
+        item.user.name
+    ){
+
+        artist =
+            item.user.name;
+
+    }
+    else if(
+        item.user &&
+        item.user.handle
+    ){
+
+        artist =
+            item.user.handle;
+
+    }
+
+    return {
+
+        id:item.id,
+
+        title:item.title,
+
+        artist:artist,
+
+        album:"",
+
+        cover:cover,
+
+        duration:
+            Number(item.duration) || 0,
+
+        streamable:
+            item.isStreamable !== false,
+
+        permalink:
+            item.permalink || "",
+
+        genre:
+            item.genre || ""
+
+    };
+
+}
+
+
+/* =====================================================
+   SONG HTML
+===================================================== */
+
+function songHTML(
+    song,
+    index,
+    isPlaylist
+){
+
+    const cover =
+        song.cover ||
+        "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='600' height='600'%3E%3Crect width='100%25' height='100%25' fill='%23222222'/%3E%3Ctext x='50%25' y='55%25' text-anchor='middle' font-size='180' fill='white'%3E♫%3C/text%3E%3C/svg%3E";
+
+    const removeButton =
+        isPlaylist
+        ?
+        `
+        <button
+            class="add-small"
+            onclick="removeSong(${index})"
+        >
+            −
+        </button>
+        `
+        :
+        `
+        <button
+            class="add-small"
+            onclick="addSong(${index})"
+        >
+            +
+        </button>
+        `;
+
+    const playCode =
+        isPlaylist
+        ?
+        `playSong(playlistData,${index})`
+        :
+        `playSong(searchResults,${index})`;
+
+    return `
+
+    <div class="song">
+
+        <img
+            class="cover"
+            src="${escapeHTML(cover)}"
+            alt=""
+            loading="lazy"
+        >
+
+        <div
+            class="song-info"
+            onclick="${playCode}"
+        >
+
+            <div class="title">
+                ${escapeHTML(song.title)}
+            </div>
+
+            <div class="artist">
+                ${escapeHTML(song.artist)}
+            </div>
+
+        </div>
+
+        <div class="actions">
+
+            <button
+                class="play-small"
+                onclick="${playCode}"
+            >
+                ▶
+            </button>
+
+            ${removeButton}
+
+        </div>
+
+    </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   RESULTS
+===================================================== */
+
+function renderResults(){
+
+    results.innerHTML = "";
+
+    searchResults.forEach(
+        function(song,index){
+
+            results.insertAdjacentHTML(
+                "beforeend",
+                songHTML(
+                    song,
+                    index,
+                    false
+                )
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   STREAM
+===================================================== */
+
+function getStreamUrl(trackId){
+
+    return apiUrl(
+        "/tracks/" +
+        encodeURIComponent(trackId) +
+        "/stream"
+    );
+
+}
+
+
+/* =====================================================
+   MEDIA SESSION
+   ЭКРАН БЛОКИРОВКИ / ШТОРКА ANDROID
+===================================================== */
+
+function setupMediaSession(song){
+
+    if(!("mediaSession" in navigator)){
+
+        return;
+
+    }
+
+    let artwork = [];
+
+    if(song.cover){
+
+        artwork = [
+            {
+                src:song.cover,
+                sizes:"600x600",
+                type:"image/jpeg"
+            }
+        ];
+
+    }
+
+    try{
+
+        navigator.mediaSession.metadata =
+            new MediaMetadata({
+
+                title:
+                    song.title ||
+                    "Песня",
+
+                artist:
+                    song.artist ||
+                    "Исполнитель",
+
+                album:
+                    "My Music",
+
+                artwork:
+                    artwork
+
+            });
+
+    }
+    catch(error){
+
+        console.error(
+            "MediaMetadata error:",
+            error
+        );
+
+    }
+
+
+    try{
+
+        navigator.mediaSession.setActionHandler(
+            "play",
+            function(){
+
+                audio.play();
+
+            }
+        );
+
+    }
+    catch(error){}
+
+
+    try{
+
+        navigator.mediaSession.setActionHandler(
+            "pause",
+            function(){
+
+                audio.pause();
+
+            }
+        );
+
+    }
+    catch(error){}
+
+
+    try{
+
+        navigator.mediaSession.setActionHandler(
+            "nexttrack",
+            function(){
+
+                nextButton.click();
+
+            }
+        );
+
+    }
+    catch(error){}
+
+
+    try{
+
+        navigator.mediaSession.setActionHandler(
+            "previoustrack",
+            function(){
+
+                previousButton.click();
+
+            }
+        );
+
+    }
+    catch(error){}
+
+}
+
+
+/* =====================================================
+   PLAY SONG
+===================================================== */
+
+async function playSong(
+    list,
+    index
+){
+
+    if(!list.length){
+
+        return;
+
+    }
+
+    const song =
+        list[index];
+
+    if(!song){
+
+        return;
+
+    }
+
+    if(
+        song.streamable === false
+    ){
+
+        alert(
+            "Эта песня недоступна для streaming."
+        );
+
+        return;
+
+    }
+
+
+    currentList =
+        list;
+
+    currentIndex =
+        index;
+
+
+    player.classList.remove(
+        "hidden"
+    );
+
+
+    playerCover.src =
+        song.cover || "";
+
+
+    playerTitle.textContent =
+        song.title;
+
+
+    playerArtist.textContent =
+        song.artist;
+
+
+    /*
+     * ВАЖНО:
+     * Передаём текущую песню Android.
+     */
+
+    setupMediaSession(song);
+
+
+    updateLike();
+
+
+    playButton.textContent =
+        "▶";
+
+
+    const streamUrl =
+        getStreamUrl(
+            song.id
+        );
+
+
+    audio.pause();
+
+    audio.src =
+        streamUrl;
+
+    audio.load();
+
+
+    try{
+
+        await audio.play();
+
+        playButton.textContent =
+            "Ⅱ";
+
+        if("mediaSession" in navigator){
+
+            navigator.mediaSession.playbackState =
+                "playing";
+
+        }
+
+    }
+    catch(error){
+
+        console.error(
+            "Playback error:",
+            error
+        );
+
+        playButton.textContent =
+            "▶";
+
+        if("mediaSession" in navigator){
+
+            navigator.mediaSession.playbackState =
+                "paused";
+
+        }
+
+        alert(
+            "Не удалось запустить этот трек."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   PLAY / PAUSE
+===================================================== */
+
+playButton.addEventListener(
+    "click",
+    async function(){
+
+        if(!audio.src){
+
+            return;
+
+        }
+
+        if(audio.paused){
+
+            try{
+
+                await audio.play();
+
+                playButton.textContent =
+                    "Ⅱ";
+
+            }
+            catch(error){
+
+                console.error(error);
+
+            }
+
+        }
+        else{
+
+            audio.pause();
+
+            playButton.textContent =
+                "▶";
+
+        }
+
+    }
+);
+
+
+audio.addEventListener(
+    "play",
+    function(){
+
+        playButton.textContent =
+            "Ⅱ";
+
+        if("mediaSession" in navigator){
+
+            navigator.mediaSession.playbackState =
+                "playing";
+
+        }
+
+    }
+);
+
+
+audio.addEventListener(
+    "pause",
+    function(){
+
+        playButton.textContent =
+            "▶";
+
+        if("mediaSession" in navigator){
+
+            navigator.mediaSession.playbackState =
+                "paused";
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   NEXT
+===================================================== */
+
+nextButton.addEventListener(
+    "click",
+    function(){
+
+        if(!currentList.length){
+
+            return;
+
+        }
+
+        let next;
+
+        if(
+            shuffle &&
+            currentList.length > 1
+        ){
+
+            do{
+
+                next =
+                    Math.floor(
+                        Math.random() *
+                        currentList.length
+                    );
+
+            }
+            while(
+                next === currentIndex
+            );
+
+        }
+        else{
+
+            next =
+                currentIndex + 1;
+
+            if(
+                next >= currentList.length
+            ){
+
+                next = 0;
+
+            }
+
+        }
+
+        playSong(
+            currentList,
+            next
+        );
+
+    }
+);
+
+
+/* =====================================================
+   PREVIOUS
+===================================================== */
+
+previousButton.addEventListener(
+    "click",
+    function(){
+
+        if(!currentList.length){
+
+            return;
+
+        }
+
+        if(
+            audio.currentTime > 3
+        ){
+
+            audio.currentTime = 0;
+
+            return;
+
+        }
+
+        let previous =
+            currentIndex - 1;
+
+        if(previous < 0){
+
+            previous =
+                currentList.length - 1;
+
+        }
+
+        playSong(
+            currentList,
+            previous
+        );
+
+    }
+);
+
+
+/* =====================================================
+   ENDED
+===================================================== */
+
+audio.addEventListener(
+    "ended",
+    function(){
+
+        if(repeat){
+
+            audio.currentTime = 0;
+
+            audio.play();
+
+        }
+        else{
+
+            nextButton.click();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   AUDIO ERROR
+===================================================== */
+
+audio.addEventListener(
+    "error",
+    function(){
+
+        console.error(
+            "Audio error:",
+            audio.error
+        );
+
+    }
+);
+
+
+/* =====================================================
+   PROGRESS
+===================================================== */
+
+audio.addEventListener(
+    "loadedmetadata",
+    function(){
+
+        if(
+            Number.isFinite(
+                audio.duration
+            )
+        ){
+
+            progress.max =
+                audio.duration;
+
+            duration.textContent =
+                formatTime(
+                    audio.duration
+                );
+
+        }
+
+    }
+);
+
+
+audio.addEventListener(
+    "timeupdate",
+    function(){
+
+        if(!audio.duration){
+
+            return;
+
+        }
+
+        progress.max =
+            audio.duration;
+
+        progress.value =
+            audio.currentTime;
+
+        currentTime.textContent =
+            formatTime(
+                audio.currentTime
+            );
+
+        duration.textContent =
+            formatTime(
+                audio.duration
+            );
+
+    }
+);
+
+
+progress.addEventListener(
+    "input",
+    function(){
+
+        if(audio.duration){
+
+            audio.currentTime =
+                Number(
+                    progress.value
+                );
+
+        }
+
+    }
+);
+
+
+function formatTime(seconds){
+
+    if(
+        !Number.isFinite(seconds)
+    ){
+
+        return "0:00";
+
+    }
+
+    const min =
+        Math.floor(
+            seconds / 60
+        );
+
+    const sec =
+        Math.floor(
+            seconds % 60
+        )
+        .toString()
+        .padStart(
+            2,
+            "0"
+        );
+
+    return min + ":" + sec;
+
+}
+
+
+/* =====================================================
+   SHUFFLE
+===================================================== */
+
+shuffleButton.addEventListener(
+    "click",
+    function(){
+
+        shuffle =
+            !shuffle;
+
+        shuffleButton.classList.toggle(
+            "active",
+            shuffle
+        );
+
+    }
+);
+
+
+/* =====================================================
+   REPEAT
+===================================================== */
+
+repeatButton.addEventListener(
+    "click",
+    function(){
+
+        repeat =
+            !repeat;
+
+        repeatButton.classList.toggle(
+            "active",
+            repeat
+        );
+
+    }
+);
+
+
+/* =====================================================
+   PLAYLIST
+===================================================== */
+
+function addSong(index){
+
+    const song =
+        searchResults[index];
+
+    if(!song){
+
+        return;
+
+    }
+
+    const exists =
+        playlistData.some(
+            function(item){
+
+                return item.id === song.id;
+
+            }
+        );
+
+    if(exists){
+
+        alert(
+            "Эта песня уже добавлена."
+        );
+
+        return;
+
+    }
+
+    playlistData.push(
+        song
+    );
+
+    localStorage.setItem(
+        "myMusicPlaylist",
+        JSON.stringify(
+            playlistData
+        )
+    );
+
+    alert(
+        "Песня добавлена в плейлист."
+    );
+
+}
+
+
+function removeSong(index){
+
+    playlistData.splice(
+        index,
+        1
+    );
+
+    localStorage.setItem(
+        "myMusicPlaylist",
+        JSON.stringify(
+            playlistData
+        )
+    );
+
+    renderPlaylist();
+
+}
+
+
+/* =====================================================
+   PLAYLIST RENDER
+===================================================== */
+
+function renderPlaylist(){
+
+    playlist.innerHTML =
+        "";
+
+    if(!playlistData.length){
+
+        playlistSection.classList.add(
+            "hidden"
+        );
+
+        emptyPlaylist.classList.remove(
+            "hidden"
+        );
+
+        return;
+
+    }
+
+    emptyPlaylist.classList.add(
+        "hidden"
+    );
+
+    playlistSection.classList.remove(
+        "hidden"
+    );
+
+    playlistData.forEach(
+        function(song,index){
+
+            playlist.insertAdjacentHTML(
+                "beforeend",
+                songHTML(
+                    song,
+                    index,
+                    true
+                )
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   PLAYLIST BUTTON
+===================================================== */
+
+function openPlaylist(){
+
+    welcome.classList.add(
+        "hidden"
+    );
+
+    resultsSection.classList.add(
+        "hidden"
+    );
+
+    loading.classList.add(
+        "hidden"
+    );
+
+    renderPlaylist();
+
+}
+
+
+document
+    .getElementById(
+        "playlistOpen"
+    )
+    .addEventListener(
+        "click",
+        openPlaylist
+    );
+
+
+document
+    .getElementById(
+        "playlistTab"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            openPlaylist();
+
+            document
+                .getElementById(
+                    "searchTab"
+                )
+                .classList.remove(
+                    "active"
+                );
+
+            document
+                .getElementById(
+                    "playlistTab"
+                )
+                .classList.add(
+                    "active"
+                );
+
+        }
+    );
+
+
+/* =====================================================
+   SEARCH TAB
+===================================================== */
+
+document
+    .getElementById(
+        "searchTab"
+    )
+    .addEventListener(
+        "click",
+        function(){
+
+            playlistSection.classList.add(
+                "hidden"
+            );
+
+            emptyPlaylist.classList.add(
+                "hidden"
+            );
+
+            document
+                .getElementById(
+                    "playlistTab"
+                )
+                .classList.remove(
+                    "active"
+                );
+
+            document
+                .getElementById(
+                    "searchTab"
+                )
+                .classList.add(
+                    "active"
+                );
+
+            if(
+                searchInput.value.trim()
+            ){
+
+                resultsSection.classList.remove(
+                    "hidden"
+                );
+
+            }
+            else{
+
+                welcome.classList.remove(
+                    "hidden"
+                );
+
+            }
+
+        }
+    );
+
+
+/* =====================================================
+   CLEAR
+===================================================== */
+
+clearButton.addEventListener(
+    "click",
+    function(){
+
+        searchInput.value =
+            "";
+
+        clearButton.style.display =
+            "none";
+
+        results.innerHTML =
+            "";
+
+        resultsSection.classList.add(
+            "hidden"
+        );
+
+        showWelcome();
+
+    }
+);
+
+
+function showWelcome(){
+
+    loading.classList.add(
+        "hidden"
+    );
+
+    resultsSection.classList.add(
+        "hidden"
+    );
+
+    playlistSection.classList.add(
+        "hidden"
+    );
+
+    emptyPlaylist.classList.add(
+        "hidden"
+    );
+
+    welcome.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+/* =====================================================
+   LIKE
+===================================================== */
+
+likeButton.addEventListener(
+    "click",
+    function(){
+
+        if(
+            currentIndex < 0 ||
+            !currentList[currentIndex]
+        ){
+
+            return;
+
+        }
+
+        const id =
+            currentList[currentIndex].id;
+
+        const position =
+            favorites.indexOf(
+                id
+            );
+
+        if(position === -1){
+
+            favorites.push(
+                id
+            );
+
+        }
+        else{
+
+            favorites.splice(
+                position,
+                1
+            );
+
+        }
+
+        localStorage.setItem(
+            "myMusicFavorites",
+            JSON.stringify(
+                favorites
+            )
+        );
+
+        updateLike();
+
+    }
+);
+
+
+function updateLike(){
+
+    if(
+        currentIndex < 0 ||
+        !currentList[currentIndex]
+    ){
+
+        return;
+
+    }
+
+    const id =
+        currentList[currentIndex].id;
+
+    if(
+        favorites.includes(id)
+    ){
+
+        likeButton.textContent =
+            "♥";
+
+        likeButton.classList.add(
+            "active"
+        );
+
+    }
+    else{
+
+        likeButton.textContent =
+            "♡";
+
+        likeButton.classList.remove(
+            "active"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(text){
+
+    return String(
+        text || ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /'/g,
+        "&#039;"
+    );
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+renderPlaylist();
+
+</script>
+
+</body>
+</html>
