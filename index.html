@@ -25,7 +25,7 @@ button{border:0;color:inherit;cursor:pointer;background:none}
 .art-wrap{position:relative;width:min(100%, min(66vh,520px));aspect-ratio:1/1;border:1px solid rgba(255,255,255,.32);border-radius:29px;overflow:hidden;background:linear-gradient(135deg,#7953bd,#cf54b1 58%,#4059ad);box-shadow:0 15px 45px rgba(0,0,0,.22)}
 .art-wrap img{width:100%;height:100%;display:block;object-fit:cover}
 .art-placeholder{position:absolute;inset:0;display:grid;place-items:center;font-size:70px;color:rgba(255,255,255,.9);pointer-events:none}
-.art-placeholder .icon{width:48px;height:48px;stroke-width:1.5}
+.art-placeholder .icon{width:76px;height:76px;stroke-width:1.5}
 .art-heart{position:absolute;right:18px;bottom:18px;width:66px;height:66px;border-radius:50%;display:grid;place-items:center;background:rgba(31,28,71,.48);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(15px)}
 .art-heart .icon{width:30px;height:30px}
 .art-heart.active{color:#ff668d}
@@ -164,6 +164,7 @@ button{border:0;color:inherit;cursor:pointer;background:none}
   </div>
 </div>
 
+<!-- Search / library / settings screens -->
 <section class="view" id="searchView">
   <div class="view-head">
     <button class="back" data-close><svg class="icon" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button>
@@ -220,9 +221,11 @@ button{border:0;color:inherit;cursor:pointer;background:none}
 </div>
 
 <script>
-const AUDIUS_API_KEY = "";
+/* ================= CONFIG ================= */
+const AUDIUS_API_KEY = ""; // Если Audius требует ключ — вставь его сюда
 const API = "https://api.audius.co/v1";
 
+/* ================= ELEMENTS ================= */
 const $ = id => document.getElementById(id);
 const audio = $("audio");
 let searchResults = [];
@@ -278,6 +281,7 @@ function normalizeTrack(t){
   };
 }
 
+/* ================= BACKGROUND / COVER ================= */
 function setArtwork(url){
   if(url){
     $("cover").src=url;
@@ -298,6 +302,7 @@ $("cover").addEventListener("error",()=>{
   $("placeholder").style.display="grid";
 });
 
+/* ================= VIEWS ================= */
 function openView(id){
   document.querySelectorAll(".view").forEach(v=>v.classList.remove("show"));
   $(id).classList.add("show");
@@ -314,6 +319,7 @@ $("equalizerBtn").addEventListener("click",()=>openView("equalizerView"));
 $("soundBtn").addEventListener("click",()=>openView("soundView"));
 $("settingsBtn").addEventListener("click",()=>openView("settingsView"));
 
+/* ================= SEARCH ================= */
 $("searchInput").addEventListener("input",()=>{
   clearTimeout(searchTimer);
   const q=$("searchInput").value.trim();
@@ -354,48 +360,22 @@ async function searchMusic(query){
   }
 }
 
-/* Плейсхолдер-обложка для треков без картинки */
-const placeholderCover = "data:image/svg+xml;charset=UTF-8," + encodeURIComponent(`
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <defs>
-    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#7953bd"/>
-      <stop offset=".58" stop-color="#cf54b1"/>
-      <stop offset="1" stop-color="#4059ad"/>
-    </linearGradient>
-  </defs>
-  <rect width="100" height="100" rx="12" fill="url(#g)"/>
-  <path d="M56 27v37c0 7-15 11-18 4-3-7 6-12 13-9V34l27-5v29c0 7-15 11-18 4-3-7 6-12 13-9V24z" fill="#fff" opacity=".9"/>
-</svg>
-`);
-
+/* ================= SONG LISTS ================= */
 function renderSongList(container,list,source){
   container.innerHTML="";
   list.forEach((song,index)=>{
     const row=document.createElement("div");
     row.className="song";
-
     const img=document.createElement("img");
-    img.alt="";
-    img.src=song.cover||placeholderCover;
-    img.onerror=()=>{
-      if(img.dataset.fallback==="1")return;
-      img.dataset.fallback="1";
-      img.src=placeholderCover;
-    };
-
-    const info=document.createElement("div");
-    info.className="song-info";
+    img.src=song.cover||"";img.alt="";
+    img.onerror=()=>{img.style.opacity=".15";};
+    const info=document.createElement("div");info.className="song-info";
     info.innerHTML=`<div class="song-name">${escapeHTML(song.title)}</div><div class="song-artist">${escapeHTML(song.artist)}</div>`;
     info.addEventListener("click",()=>playSong(list,index));
-
-    const play=document.createElement("button");
-    play.className="song-action";
+    const play=document.createElement("button");play.className="song-action";
     play.innerHTML='<svg class="icon" viewBox="0 0 24 24"><path d="m8 5 12 7-12 7z" fill="currentColor" stroke="none"/></svg>';
     play.addEventListener("click",()=>playSong(list,index));
-
-    const add=document.createElement("button");
-    add.className="song-action";
+    const add=document.createElement("button");add.className="song-action";
     add.textContent=source==="library"?"−":"+";
     add.addEventListener("click",()=>{
       if(source==="library"){
@@ -405,8 +385,7 @@ function renderSongList(container,list,source){
         playlist.push(song);saveData();showToast("Добавлено в плейлист");
       }
     });
-    row.append(img,info,play,add);
-    container.appendChild(row);
+    row.append(img,info,play,add);container.appendChild(row);
   });
 }
 function renderLibrary(){
@@ -417,6 +396,7 @@ function renderLibrary(){
   $("favoritesEmpty").style.display=favSongs.length?"none":"block";
 }
 
+/* ================= PLAYER ================= */
 async function playSong(list,index){
   const song=list[index];if(!song)return;
   if(song.streamable===false){showToast("Этот трек недоступен для воспроизведения");return;}
@@ -494,6 +474,7 @@ $("repeatBtn").addEventListener("click",()=>{
 $("volume").addEventListener("input",()=>audio.volume=Number($("volume").value));
 audio.volume=.75;
 
+/* ================= FAVORITES ================= */
 function updateLike(){
   const song=currentList[currentIndex];
   const active=!!song&&favorites.some(id=>String(id)===String(song.id));
@@ -507,8 +488,9 @@ $("likeBtn").addEventListener("click",()=>{
   const i=favorites.findIndex(id=>String(id)===String(song.id));
   if(i>=0)favorites.splice(i,1);else favorites.push(song.id);
   saveData();updateLike();renderLibrary();
-}
+});
 
+/* ================= MEDIA SESSION ================= */
 function updateMediaSession(song){
   if(!("mediaSession" in navigator))return;
   try{
@@ -532,6 +514,7 @@ playSong=async function(list,index){
 audio.addEventListener("play",()=>{if("mediaSession" in navigator)try{navigator.mediaSession.playbackState="playing";}catch(e){}});
 audio.addEventListener("pause",()=>{if("mediaSession" in navigator)try{navigator.mediaSession.playbackState="paused";}catch(e){}});
 
+/* ================= START ================= */
 renderLibrary();
 setArtwork("");
 setPlaying(false);
